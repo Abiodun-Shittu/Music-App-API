@@ -14,8 +14,8 @@ app.use(express.json());
 connection();
 
 app.get("/", (_, res) => {
-	return res.status(200).json({message: "Music Player App is Running"})
-})
+	return res.status(200).json({ message: "Music Player App is Running" });
+});
 
 app.use("/users", userRouter);
 
