@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connection from "./database/db.js";
 import userRouter from "./routes/userRoutes.js";
 import musicRouter from "./routes/musicRoutes.js"
+import seedAdmin from "./seeders/admin.js"
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 connection();
+seedAdmin();
 
 app.get("/", (_, res) => {
 	return res.status(200).json({ message: "Music Player App is Running" });
