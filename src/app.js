@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connection from "./database/db.js";
 import userRouter from "./routes/userRoutes.js";
+import musicRouter from "./routes/musicRoutes.js"
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get("/", (_, res) => {
 });
 
 app.use("/users", userRouter);
+app.use("/music", musicRouter);
 
 app.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
