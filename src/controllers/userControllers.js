@@ -5,7 +5,13 @@ import user from "../models/user.js";
 const createUser = async (req, res) => {
 	try {
 		const { email, username, password } = req.body;
+		const checkMail = await user.findOne({ email });
 		const foundUser = await user.findOne({ username });
+		if (checkMail) {
+			return res
+				.status(400)
+				.json({ message: "User with this Email already exists" });
+		}
 		if (foundUser) {
 			return res
 				.status(400)
@@ -21,13 +27,17 @@ const createUser = async (req, res) => {
 			id: newUser._id,
 			email: newUser.email,
 			username: newUser.username,
+			role: newUser.role,
 		};
 		const token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 3600,
 		});
 		return res.status(201).json({ message: "New User Created", token });
 	} catch (err) {
-		return res.status(500).json({ message: err.message });
+		console.log(err);
+		return res
+			.status(500)
+			.json({ message: "An Error Occurred, Please Contact The Admin" });
 	}
 };
 
@@ -46,6 +56,7 @@ const loginUser = async (req, res) => {
 			id: foundUser._id,
 			email: foundUser.email,
 			username: foundUser.username,
+			role: foundUser.role,
 		};
 		const token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 3600,
@@ -54,7 +65,10 @@ const loginUser = async (req, res) => {
 			.status(200)
 			.json({ message: "Successfully Logged In", token });
 	} catch (err) {
-		return res.status(500).json({ message: err.message });
+		console.log(err);
+		return res
+			.status(500)
+			.json({ message: "An Error Occurred, Please Contact The Admin" });
 	}
 };
 
