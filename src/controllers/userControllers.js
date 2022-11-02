@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import createToken from "../services/jwt.js";
 import user from "../models/user.js";
 
 const createUser = async (req, res) => {
@@ -23,15 +23,7 @@ const createUser = async (req, res) => {
 			username: username,
 			password: hashPassword,
 		});
-		const payload = {
-			id: newUser._id,
-			email: newUser.email,
-			username: newUser.username,
-			role: newUser.role,
-		};
-		const token = jwt.sign(payload, process.env.SECRET, {
-			expiresIn: 3600,
-		});
+		const token = createToken(newUser);
 		return res.status(201).json({ message: "New User Created", token });
 	} catch (err) {
 		console.log(err);
@@ -52,15 +44,7 @@ const loginUser = async (req, res) => {
 		if (!match) {
 			return res.status(404).json({ message: "Invalid password" });
 		}
-		const payload = {
-			id: foundUser._id,
-			email: foundUser.email,
-			username: foundUser.username,
-			role: foundUser.role,
-		};
-		const token = jwt.sign(payload, process.env.SECRET, {
-			expiresIn: 3600,
-		});
+		const token = createToken(foundUser);
 		return res
 			.status(200)
 			.json({ message: "Successfully Logged In", token });
