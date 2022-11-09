@@ -12,11 +12,11 @@ const seedAdmin = async () => {
 			return null;
 		}
 		const hashed = await bcrypt.hash(process.env.PASSWORD, 10);
-		const admin = await user.create({
+		await user.create({
 			email: process.env.EMAIL,
 			username: process.env.USERNAME,
 			password: hashed,
-			role: "admin",
+			isAdmin: true,
 		});
 		console.log("Admin Created");
 	} catch (err) {

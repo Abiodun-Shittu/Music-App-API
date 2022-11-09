@@ -1,5 +1,5 @@
 import express from "express";
-import musicControllers from "../controllers/musicControllers.js";
+import musicControllers from "../controllers/musics.js";
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -19,5 +19,7 @@ router.delete(
 	auth.checkRole,
 	musicControllers.deleteMusic
 );
+router.put("/like/:id", auth.authUser, musicControllers.likeSong);
+router.get("/like", auth.authUser, musicControllers.likeSong);
 
 export default router;

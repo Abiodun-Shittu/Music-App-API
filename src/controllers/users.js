@@ -6,13 +6,13 @@ const createUser = async (req, res) => {
 	try {
 		const { email, username, password, confirmPassword } = req.body;
 		const checkMail = await user.findOne({ email });
-		const findUser = await user.findOne({ username });
+		const checkUser = await user.findOne({ username });
 		if (checkMail) {
 			return res
 				.status(400)
 				.json({ message: "User with this Email already exists" });
 		}
-		if (findUser) {
+		if (checkUser) {
 			return res
 				.status(400)
 				.json({ message: "User with this Username already exists" });
@@ -41,11 +41,11 @@ const loginUser = async (req, res) => {
 		const { email, password } = req.body;
 		const findUser = await user.findOne({ email });
 		if (!findUser) {
-			return res.status(404).json({ message: "Invalid Email Address" });
+			return res.status(404).json({ message: "Invalid Email or Password" });
 		}
 		const match = await bcrypt.compare(password, findUser.password);
 		if (!match) {
-			return res.status(404).json({ message: "Invalid password" });
+			return res.status(404).json({ message: "Invalid Email or Password" });
 		}
 		const token = createToken(findUser);
 		return res
@@ -59,9 +59,9 @@ const loginUser = async (req, res) => {
 	}
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (_, res) => {
 	try {
-		const allUsers = await user.find();
+		const allUsers = await user.find().select("-password -__v");
 		return res.status(200).json(allUsers);
 	} catch (err) {
 		console.log(err);
@@ -76,9 +76,9 @@ const getUser = async (req, res) => {
 		const { id } = req.params;
 		if (id !== req.user.id)
 			return res.status(401).json({ message: "Access Denied" });
-		const findUser = await user.findById(id);
-		if (!findUser)
-			return res.status(404).json({ message: "User Not Found" });
+		const findUser = await user.findById(id).select("-password -__v");
+		// if (!findUser)
+		// 	return res.status(404).json({ message: "User Not Found" });
 		return res.status(200).json(findUser);
 	} catch (err) {
 		console.log(err);
@@ -106,12 +106,9 @@ const updateUser = async (req, res) => {
 				.status(400)
 				.json({ message: "User with this Username already exists" });
 		}
-		const updateUser = await user.findByIdAndUpdate(id, {
-			username,
-			email,
-		});
-		if (!updateUser)
-			return res.status(404).json({ message: "User Not Found" });
+		const updateUser = await user.findByIdAndUpdate(id, {$set: req.body});
+		// if (!updateUser)
+		// 	return res.status(404).json({ message: "User Not Found" });
 		return res.status(200).json({ message: "User Updated Successfully" });
 	} catch (err) {
 		console.log(err);
